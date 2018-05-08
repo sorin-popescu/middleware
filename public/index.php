@@ -1,7 +1,9 @@
 <?php
 
+use Middlewares\DiactorosResponderMiddleware;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
+use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\ServerRequestFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -18,6 +20,7 @@ $routeDispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector
 
 
 $dispatcher = new Dispatcher([
+    new DiactorosResponderMiddleware(new SapiEmitter()),
     new Middlewares\FastRoute($routeDispatcher),
     new Middlewares\Uuid(),
     new Middlewares\RequestHandler(),
@@ -26,5 +29,3 @@ $dispatcher = new Dispatcher([
 $response = $dispatcher->dispatch(ServerRequestFactory::fromGlobals());
 
 
-$emitter = new Zend\Diactoros\Response\SapiEmitter();
-$emitter->emit($response);
